@@ -35,4 +35,4 @@ class ClassificationHandler:
 
 
 if __name__ == '__main__':
-    ClassificationHandler('localhost')
+    ClassificationHandler('rabbitmq')

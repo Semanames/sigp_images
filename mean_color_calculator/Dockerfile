@@ -1,6 +1,8 @@
-FROM python:3.7.3
+FROM python:3.7
 
-COPY requirements.txt requirements.txt
+COPY . ./work
+WORKDIR ./work
+
 RUN pip3 install -r ./requirements.txt
 
 ENTRYPOINT ["python", "main.py"]

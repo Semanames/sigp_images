@@ -1,14 +1,42 @@
+version: "3.9"
 
 services:
     rabbitmq:
-        image: rabbitmq:3-management-alpine
+        image: rabbitmq:3-management
         container_name: rabbitmq
-        volumes:
-            - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-            - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-            - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+        networks:
+            - rmq
         ports:
             - 5672:5672
             - 15672:15672
+
     image_pusher:
       build: ./image_pusher
+      networks:
+        - rmq
+      depends_on:
+        - rabbitmq
+      container_name: image_pusher
+      volumes:
+          - ./image_pusher/images_to_process:/work/images_to_process/
+
+    mean_color_calculator:
+      build: ./mean_color_calculator
+      networks:
+        - rmq
+      depends_on:
+        - rabbitmq
+      container_name: mean_color_calculator
+
+    image_classifier:
+      build: ./image_classification
+      networks:
+        - rmq
+      depends_on:
+        - rabbitmq
+      container_name: image_classifier
+      volumes:
+        - ./image_pusher/processed_images:/work/processed_images/
+
+networks:
+  rmq:

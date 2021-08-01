@@ -2,7 +2,7 @@ import json
 
 import numpy as np
 
-from mq_messaging import RMQConsumer, RMQProducer
+from mq_messaging import RMQProducer, RMQConsumer
 
 
 class CalculatorInputValidator:
@@ -38,4 +38,4 @@ class CalculatorHandler:
 
 
 if __name__ == '__main__':
-    CalculatorHandler('localhost')
+    CalculatorHandler('rabbitmq')
