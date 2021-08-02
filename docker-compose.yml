@@ -12,6 +12,7 @@ services:
 
     image_pusher:
       build: ./image_pusher
+      restart: on-failure
       networks:
         - rmq
       depends_on:
@@ -22,6 +23,7 @@ services:
 
     mean_color_calculator:
       build: ./mean_color_calculator
+      restart: on-failure
       networks:
         - rmq
       depends_on:
@@ -30,6 +32,7 @@ services:
 
     image_classifier:
       build: ./image_classification
+      restart: on-failure
       networks:
         - rmq
       depends_on:
