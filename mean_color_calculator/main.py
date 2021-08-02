@@ -10,7 +10,7 @@ class CalculatorInputValidator:
 
 
 class AverageColorCalculator:
-    COLOR_MAPPING = {0: 'red', 1: 'green', 2: 'blue'}
+    COLOR_MAPPING = {0: 'blue', 1: 'green', 2: 'red'}
 
     def __init__(self, image):
         self.image = image
@@ -23,7 +23,9 @@ class CalculatorHandler:
     def __init__(self, host):
         self.mq_producer = RMQProducer('calculation_output', host)
         self.mq_consumer = RMQConsumer('calculation_request', host)
+        print('Mean Color Calculator connected to the RMQ')
         self.mq_consumer.consume(self.callback_for_calculation)
+        print('Mean Color Calculator: Consuming images from RMQ')
 
     def callback_for_calculation(self, ch, method, properties, body):
         body_dict = json.loads(body)

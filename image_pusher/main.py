@@ -21,14 +21,16 @@ class ReaderHandler:
     def __init__(self, host, path_to_image_dir='./images_to_process'):
         self.path_to_image_dir = path_to_image_dir
         self.mq_producer = RMQProducer('calculation_request', host)
+        print('Image Reader connected to the RMQ')
 
     def select_images_in_folder(self):
 
         return [x for x in glob.glob(self.path_to_image_dir + "/*")]
 
-    def send_images(self):
+    def send_images(self, delta_t=5):
 
         sent_images = set()
+        print('Image Reader: Pushing for images from ./images_to_process  to RMQ')
 
         while True:
 
@@ -37,18 +39,20 @@ class ReaderHandler:
 
             if diff:
                 for image_path in diff:
-
                     image = ImageReader.read_image(image_path)
+                    if image is not None:
 
-                    body = {"image_name": os.path.basename(image_path),
-                            "image": image.tolist()}
+                        body = {"image_name": os.path.basename(image_path),
+                                "image": image.tolist()}
 
-                    self.mq_producer.publish(json.dumps(body))
-                    sent_images = sent_images.union(diff)
+                        self.mq_producer.publish(json.dumps(body))
+                        sent_images = sent_images.union(diff)
+                    else:
+                        pass
             else:
                 pass
 
-            time.sleep(5)
+            time.sleep(delta_t)
 
 
 if __name__ == '__main__':

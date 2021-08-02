@@ -27,6 +27,7 @@ class ClassificationHandler:
     def __init__(self, host):
         self.mq_consumer = RMQConsumer('calculation_output', host)
         self.mq_consumer.consume(ClassificationHandler.classification_callback)
+        print('Image Classifier connected to the RMQ')
 
     @staticmethod
     def classification_callback(ch, method, properties, body):
