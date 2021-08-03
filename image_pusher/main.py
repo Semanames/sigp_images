@@ -7,6 +7,8 @@ import cv2
 
 from logger import logger
 from mq_messaging import RMQProducer
+from pathlib import Path
+Path('my_file.mp3').suffix == '.mp3'
 
 
 class ImageReaderConfig:
@@ -18,16 +20,32 @@ class ImageReaderConfig:
     TIME_CHECK_PERIOD = 5
 
 
-class ImageReaderInputValidator:
+class ImageReaderException(Exception):
     pass
+
+
+class ImageReaderInputValidator:
+    supported_extensions = ['.bmp', '.dib', '.jpg', '.jpe', '.jp2', '.png', '.webp',
+                            '.pbm', '.pgm', '.ppm', '.pxm', '.pnm', '.sr', '.ras',
+                            '.tiff', '.tif', '.exr', '.hdr', '.pic']
+
+    @classmethod
+    def validate_input_file(cls, image_path):
+        if not Path(image_path).suffix in cls.supported_extensions:
+            logger.error(f'File format for {os.path.basename(image_path)}' +
+                         f' is not among {cls.supported_extensions}')
+            return False
+        return True
 
 
 class ImageReader:
 
     @staticmethod
     def read_image(path_to_image):
-        img = cv2.imread(path_to_image)
-        return img
+        if ImageReaderInputValidator.validate_input_file(path_to_image):
+            img = cv2.imread(path_to_image)
+            return img
+        return None
 
 
 class ReaderHandler:
@@ -70,4 +88,4 @@ class ReaderHandler:
 
 
 if __name__ == '__main__':
-    ReaderHandler(ImageReaderConfig.MQ_BROKER).send_images()
+    ReaderHandler('localhost').send_images()
