@@ -8,7 +8,6 @@ import cv2
 from logger import logger
 from mq_messaging import RMQProducer
 from pathlib import Path
-Path('my_file.mp3').suffix == '.mp3'
 
 
 class ImageReaderConfig:
