@@ -47,7 +47,7 @@ class ImageReader:
         return None
 
 
-class ReaderHandler:
+class ImageReaderHandler:
 
     def __init__(self, host, path_to_image_dir=ImageReaderConfig.IMAGES_TO_PROCESS_PATH):
         self.path_to_image_dir = path_to_image_dir
@@ -84,4 +84,4 @@ class ReaderHandler:
 
 
 if __name__ == '__main__':
-    ReaderHandler(ImageReaderConfig.MQ_BROKER).send_images()
+    ImageReaderHandler(ImageReaderConfig.MQ_BROKER).send_images()
