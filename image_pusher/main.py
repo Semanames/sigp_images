@@ -60,13 +60,13 @@ class ReaderHandler:
 
     def send_images(self, delta_t=ImageReaderConfig.TIME_CHECK_PERIOD):
 
-        sent_images = set()
+        processed_images = set()
         logger.info(f'Image Reader: Pushing for images from {ImageReaderConfig.IMAGES_TO_PROCESS_PATH}  to RMQ')
 
         while True:
 
             list_of_images = set(self.select_images_in_folder())
-            diff = list_of_images - sent_images
+            diff = list_of_images - processed_images
 
             if diff:
                 for image_path in diff:
@@ -77,11 +77,8 @@ class ReaderHandler:
                                 ImageReaderConfig.IMAGE_ARRAY: image.tolist()}
 
                         self.mq_producer.publish(json.dumps(body))
-                        sent_images = sent_images.union(diff)
-                    else:
-                        pass
-            else:
-                pass
+
+                processed_images = processed_images.union(diff)
 
             time.sleep(delta_t)
 
