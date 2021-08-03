@@ -5,32 +5,44 @@ import time
 
 import cv2
 
+from image_pusher.logger import logger
 from mq_messaging import RMQProducer
+
+
+class ImageReaderConfig:
+
+    IMAGE_REQUEST_QUEUE = 'calculation_request'
+    IMAGE_NAME = "image_name"
+    IMAGE_ARRAY = "image"
+    IMAGES_TO_PROCESS_PATH = './images_to_process'
+    MQ_BROKER = 'rabbitmq'
+    TIME_CHECK_PERIOD = 5
 
 
 class ImageReader:
 
     @staticmethod
     def read_image(path_to_image):
+        logger.info(f'Reading image {path_to_image}')
         img = cv2.imread(path_to_image)
         return img
 
 
 class ReaderHandler:
 
-    def __init__(self, host, path_to_image_dir='./images_to_process'):
+    def __init__(self, host, path_to_image_dir=ImageReaderConfig.IMAGES_TO_PROCESS_PATH):
         self.path_to_image_dir = path_to_image_dir
-        self.mq_producer = RMQProducer('calculation_request', host)
-        print('Image Reader connected to the RMQ')
+        self.mq_producer = RMQProducer(ImageReaderConfig.IMAGE_REQUEST_QUEUE, host)
+        logger.info('Image Reader connected to the RMQ')
 
     def select_images_in_folder(self):
 
         return [x for x in glob.glob(self.path_to_image_dir + "/*")]
 
-    def send_images(self, delta_t=5):
+    def send_images(self, delta_t=ImageReaderConfig.TIME_CHECK_PERIOD):
 
         sent_images = set()
-        print('Image Reader: Pushing for images from ./images_to_process  to RMQ')
+        logger.info(f'Image Reader: Pushing for images from {ImageReaderConfig.IMAGES_TO_PROCESS_PATH}  to RMQ')
 
         while True:
 
@@ -42,8 +54,8 @@ class ReaderHandler:
                     image = ImageReader.read_image(image_path)
                     if image is not None:
 
-                        body = {"image_name": os.path.basename(image_path),
-                                "image": image.tolist()}
+                        body = {ImageReaderConfig.IMAGE_NAME: os.path.basename(image_path),
+                                ImageReaderConfig.IMAGE_ARRAY: image.tolist()}
 
                         self.mq_producer.publish(json.dumps(body))
                         sent_images = sent_images.union(diff)
@@ -56,4 +68,4 @@ class ReaderHandler:
 
 
 if __name__ == '__main__':
-    ReaderHandler('rabbitmq').send_images()
+    ReaderHandler(ImageReaderConfig.MQ_BROKER).send_images()
