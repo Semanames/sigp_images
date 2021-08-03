@@ -8,7 +8,6 @@ from mq_messaging import RMQConsumer
 
 
 class ImageClassifierConfig:
-
     IMAGE_PROCESSED_QUEUE = 'calculation_output'
     IMAGE_NAME = "image_name"
     IMAGE_ARRAY = "image"
@@ -18,6 +17,10 @@ class ImageClassifierConfig:
     GREEN = 'green'
     BLUE = 'blue'
     PROCESSED_IMAGES_PATH = './processed_images'
+
+
+class ImageClassifierInputValidator:
+    pass
 
 
 class ImageClassifier:

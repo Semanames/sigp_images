@@ -10,13 +10,16 @@ from mq_messaging import RMQProducer
 
 
 class ImageReaderConfig:
-
     IMAGE_REQUEST_QUEUE = 'calculation_request'
     IMAGE_NAME = "image_name"
     IMAGE_ARRAY = "image"
     IMAGES_TO_PROCESS_PATH = './images_to_process'
     MQ_BROKER = 'rabbitmq'
     TIME_CHECK_PERIOD = 5
+
+
+class ImageReaderInputValidator:
+    pass
 
 
 class ImageReader:
