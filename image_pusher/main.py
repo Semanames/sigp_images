@@ -87,4 +87,4 @@ class ReaderHandler:
 
 
 if __name__ == '__main__':
-    ReaderHandler('localhost').send_images()
+    ReaderHandler(ImageReaderConfig.MQ_BROKER).send_images()
