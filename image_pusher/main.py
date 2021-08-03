@@ -5,7 +5,7 @@ import time
 
 import cv2
 
-from image_pusher.logger import logger
+from logger import logger
 from mq_messaging import RMQProducer
 
 
@@ -26,7 +26,6 @@ class ImageReader:
 
     @staticmethod
     def read_image(path_to_image):
-        logger.info(f'Reading image {path_to_image}')
         img = cv2.imread(path_to_image)
         return img
 

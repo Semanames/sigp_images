@@ -1,9 +1,10 @@
 import json
+import os
 
 import cv2
 import numpy as np
 
-from image_classification.logger import logger
+from logger import logger
 from mq_messaging import RMQConsumer
 
 
@@ -36,7 +37,12 @@ class ImageClassifier:
 
         logger.info(f'Classifying image {image_name}')
 
-        new_image_path = self.output_classification_path + "/" + average_color + "/" + image_name
+        base_path = self.output_classification_path + "/" + average_color
+
+        if not os.path.exists(base_path):
+            os.mkdir(base_path)
+
+        new_image_path = base_path + "/" + image_name
         cv2.imwrite(new_image_path, image)
 
 

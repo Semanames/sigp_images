@@ -2,7 +2,7 @@ import json
 
 import numpy as np
 
-from mean_color_calculator.logger import logger
+from logger import logger
 from mq_messaging import RMQProducer, RMQConsumer
 
 

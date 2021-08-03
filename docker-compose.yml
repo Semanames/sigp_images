@@ -39,7 +39,7 @@ services:
         - rabbitmq
       container_name: image_classifier
       volumes:
-        - ./image_classifier/processed_images:/work/processed_images/
+        - ./image_classification/processed_images:/work/processed_images/
 
 networks:
   rmq:
