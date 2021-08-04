@@ -1,7 +1,7 @@
 # SIGP Images
 
 ### General
-This repository is dedicated to simple micro-servis system for image classification based on its average color  <br />
+This repository is dedicated to simple micro-service system for image classification based on its average color  <br />
 System of microservices is communication through RabbitMQ message broker. <br />
 There are three subservices :  <br />
 * **Image Pusher** -`/sigp_images/image_pusher` - looking for files in directory `image_pusher/images_to_process/`
