@@ -3,9 +3,10 @@ import os
 
 import cv2
 import numpy as np
+import webcolors
 
-from logger import logger
-from mq_messaging import RMQConsumer
+from .logger import logger
+from .mq_messaging import RMQConsumer
 
 
 class ImageClassifierConfig:
@@ -21,14 +22,31 @@ class ImageClassifierConfig:
 
 
 class ImageClassifierInputValidator:
-    pass
+    input_data_keys = {ImageClassifierConfig.IMAGE_NAME,
+                       ImageClassifierConfig.IMAGE_ARRAY,
+                       ImageClassifierConfig.AVERAGE_COLOR}
+
+    average_color_fields = set(webcolors.CSS3_NAMES_TO_HEX.keys())
+
+    @classmethod
+    def validate_calculation_output_data(cls, calculation_output_data):
+        if cls.input_data_keys.issubset(set(calculation_output_data.keys())):
+            if not calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR] in cls.average_color_fields:
+                raise ValueError(f'{calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR]}' +
+                                 f' is not among {cls.average_color_fields}')
+
+            return calculation_output_data
+        else:
+            missing_keys = cls.input_data_keys - set(calculation_output_data.keys())
+            raise ValueError(f'There are missing keys {missing_keys} in input data: {calculation_output_data}')
 
 
 class ImageClassifier:
 
     def __init__(self, calculation_output_data, output_classification_path=ImageClassifierConfig.PROCESSED_IMAGES_PATH):
         self.output_classification_path = output_classification_path
-        self.calculation_output_data = calculation_output_data
+        self.calculation_output_data = ImageClassifierInputValidator.validate_calculation_output_data(
+            calculation_output_data)
 
     def classify(self):
         image_name = self.calculation_output_data[ImageClassifierConfig.IMAGE_NAME]
@@ -55,7 +73,12 @@ class ClassificationHandler:
     @staticmethod
     def classification_callback(ch, method, properties, body):
         calculation_output_data = json.loads(body)
-        ImageClassifier(calculation_output_data).classify()
+        try:
+            image_classifier = ImageClassifier(calculation_output_data)
+        except ValueError as exc:
+            logger.error(exc_info=str(exc))
+            return
+        image_classifier.classify()
 
 
 if __name__ == '__main__':

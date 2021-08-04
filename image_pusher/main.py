@@ -5,8 +5,8 @@ import time
 
 import cv2
 
-from logger import logger
-from mq_messaging import RMQProducer
+from .logger import logger
+from .mq_messaging import RMQProducer
 from pathlib import Path
 
 
@@ -17,10 +17,6 @@ class ImageReaderConfig:
     IMAGES_TO_PROCESS_PATH = './images_to_process'
     MQ_BROKER = 'rabbitmq'
     TIME_CHECK_PERIOD = 5
-
-
-class ImageReaderException(Exception):
-    pass
 
 
 class ImageReaderInputValidator:

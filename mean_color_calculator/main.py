@@ -1,13 +1,13 @@
 import json
 
 import numpy as np
+import webcolors
 
-from logger import logger
-from mq_messaging import RMQProducer, RMQConsumer
+from .logger import logger
+from .mq_messaging import RMQProducer, RMQConsumer
 
 
 class ColorCalculationConfig:
-
     IMAGE_REQUEST_QUEUE = 'calculation_request'
     IMAGE_PROCESSED_QUEUE = 'calculation_output'
     IMAGE_NAME = "image_name"
@@ -20,19 +20,51 @@ class ColorCalculationConfig:
 
 
 class CalculatorInputValidator:
-    pass
+
+    @staticmethod
+    def validate_image_input(image_input):
+        if type(image_input) == list:
+            if type(image_input[0]) == list:
+                if type(image_input[0][0]) == list and len(image_input[0][0]) == 3:
+                    if type(image_input[0][0][0]) == int:
+                        return image_input
+                    else:
+                        raise TypeError(f'Image is not in correct format, it should be in BGR format')
+                else:
+                    raise TypeError(f'Image is not in correct format, it should be in BGR format')
+            else:
+                raise TypeError(f'Image is not in correct format, it should be in BGR format')
+        else:
+            raise TypeError(f'Image is not in correct format, it should be in BGR format')
 
 
 class AverageColorCalculator:
-    COLOR_MAPPING = {0: ColorCalculationConfig.BLUE,
-                     1: ColorCalculationConfig.GREEN,
-                     2: ColorCalculationConfig.RED}
 
     def __init__(self, image):
         self.image = image
 
     def calculate_average_color(self):
-        return self.COLOR_MAPPING[np.argmax(np.mean(np.mean(self.image, axis=0), axis=0))]
+        color_count = {}
+        dim = self.image.shape
+        for i in range(dim[0]):
+            for j in range(dim[1]):
+                color = self.closest_color(self.image[i, j])
+                if color in color_count.keys():
+                    color_count[color] += 1
+                else:
+                    color_count[color] = 1
+        return sorted(color_count.keys(), key=lambda color_name: color_count[color_name])[-1]
+
+    @staticmethod
+    def closest_color(requested_colour):
+        min_colors = {}
+        for key, color_name in webcolors.CSS3_HEX_TO_NAMES.items():
+            r_c, g_c, b_c = webcolors.hex_to_rgb(key)
+            rd = (r_c - requested_colour[2]) ** 2
+            gd = (g_c - requested_colour[1]) ** 2
+            bd = (b_c - requested_colour[0]) ** 2
+            min_colors[(rd + gd + bd)] = color_name
+        return min_colors[min(min_colors.keys())]
 
 
 class CalculatorHandler:
@@ -47,7 +79,12 @@ class CalculatorHandler:
         body_dict = json.loads(body)
 
         image_name = body_dict[ColorCalculationConfig.IMAGE_NAME]
-        image_array = np.array(body_dict[ColorCalculationConfig.IMAGE_ARRAY])
+        try:
+            image = CalculatorInputValidator.validate_image_input(body_dict[ColorCalculationConfig.IMAGE_ARRAY])
+        except TypeError as exc:
+            logger.error(str(exc))
+            return
+        image_array = np.array(image)
 
         logger.info(f'Calculating average color for image {image_name}')
         average_color = AverageColorCalculator(image_array).calculate_average_color()
