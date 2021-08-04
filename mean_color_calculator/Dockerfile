@@ -8,4 +8,6 @@ RUN pip3 install -r ./requirements.txt
 
 COPY . .
 
-ENTRYPOINT ["python", "main.py"]
+CMD ["pytest", "test_main.py"]
+
+CMD ["python", "main.py"]
