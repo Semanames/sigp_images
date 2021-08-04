@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from .main import CalculatorInputValidator, AverageColorCalculator
+from main import CalculatorInputValidator, AverageColorCalculator
 
 mocked_files = [([[[255, 0, 0]]], False),
                 ([[[255, 0]]], True),

@@ -1,6 +1,6 @@
 import pytest
 
-from .main import ImageReaderInputValidator
+from main import ImageReaderInputValidator
 
 mocked_files = [('mocked_file.bmp', True), ('mocked_file.dib', True), ('mocked_file.jpg', True),
                 ('mocked_file.jpe', True), ('mocked_file.jp2', True),

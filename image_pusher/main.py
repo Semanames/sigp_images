@@ -5,8 +5,8 @@ import time
 
 import cv2
 
-from .logger import logger
-from .mq_messaging import RMQProducer
+from logger import logger
+from mq_messaging import RMQProducer
 from pathlib import Path
 
 

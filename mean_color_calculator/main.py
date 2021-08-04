@@ -3,8 +3,8 @@ import json
 import numpy as np
 import webcolors
 
-from .logger import logger
-from .mq_messaging import RMQProducer, RMQConsumer
+from logger import logger
+from mq_messaging import RMQProducer, RMQConsumer
 
 
 class ColorCalculationConfig:

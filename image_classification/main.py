@@ -5,8 +5,8 @@ import cv2
 import numpy as np
 import webcolors
 
-from .logger import logger
-from .mq_messaging import RMQConsumer
+from logger import logger
+from mq_messaging import RMQConsumer
 
 
 class ImageClassifierConfig:

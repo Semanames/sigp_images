@@ -1,6 +1,6 @@
 import pytest
 
-from .main import ImageClassifierInputValidator
+from main import ImageClassifierInputValidator
 
 mocked_files = [({'image_name': 'name', 'image': [[[255, 0, 0]]], 'average_color': 'blue'}, False),
                 ({'image_name': 'name', 'image': [[[255, 0, 0]]]}, True),
