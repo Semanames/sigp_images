@@ -1,4 +1,5 @@
 import json
+from typing import List, Union
 
 import numpy as np
 import webcolors
@@ -40,7 +41,7 @@ class CalculatorInputValidator:
 
 class AverageColorCalculator:
 
-    def __init__(self, image):
+    def __init__(self, image: np.ndarray):
         self.image = image
 
     def calculate_average_color(self):
@@ -56,7 +57,7 @@ class AverageColorCalculator:
         return sorted(color_count.keys(), key=lambda color_name: color_count[color_name])[-1]
 
     @staticmethod
-    def closest_color(requested_colour):
+    def closest_color(requested_colour: Union[List, np.ndarray]):
         min_colors = {}
         for key, color_name in webcolors.CSS3_HEX_TO_NAMES.items():
             r_c, g_c, b_c = webcolors.hex_to_rgb(key)
@@ -68,7 +69,7 @@ class AverageColorCalculator:
 
 
 class CalculatorHandler:
-    def __init__(self, host):
+    def __init__(self, host: str):
         self.mq_producer = RMQProducer(ColorCalculationConfig.IMAGE_PROCESSED_QUEUE, host)
         self.mq_consumer = RMQConsumer(ColorCalculationConfig.IMAGE_REQUEST_QUEUE, host)
         logger.info('Mean Color Calculator connected to the RMQ')

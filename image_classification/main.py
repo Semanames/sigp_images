@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Dict
 
 import cv2
 import numpy as np
@@ -29,7 +30,7 @@ class ImageClassifierInputValidator:
     average_color_fields = set(webcolors.CSS3_NAMES_TO_HEX.keys())
 
     @classmethod
-    def validate_calculation_output_data(cls, calculation_output_data):
+    def validate_calculation_output_data(cls, calculation_output_data: Dict):
         if cls.input_data_keys.issubset(set(calculation_output_data.keys())):
             if not calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR] in cls.average_color_fields:
                 raise ValueError(f'{calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR]}' +
@@ -43,7 +44,10 @@ class ImageClassifierInputValidator:
 
 class ImageClassifier:
 
-    def __init__(self, calculation_output_data, output_classification_path=ImageClassifierConfig.PROCESSED_IMAGES_PATH):
+    def __init__(self,
+                 calculation_output_data: Dict,
+                 output_classification_path: str = ImageClassifierConfig.PROCESSED_IMAGES_PATH):
+
         self.output_classification_path = output_classification_path
         self.calculation_output_data = ImageClassifierInputValidator.validate_calculation_output_data(
             calculation_output_data)
@@ -65,7 +69,7 @@ class ImageClassifier:
 
 
 class ClassificationHandler:
-    def __init__(self, host):
+    def __init__(self, host: str):
         self.mq_consumer = RMQConsumer(ImageClassifierConfig.IMAGE_PROCESSED_QUEUE, host)
         self.mq_consumer.consume(ClassificationHandler.classification_callback)
         logger.info('Image Classifier connected to the RMQ')

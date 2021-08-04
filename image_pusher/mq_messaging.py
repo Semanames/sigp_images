@@ -1,8 +1,10 @@
+from typing import Callable
+
 import pika
 
 
 class BaseRMQMessaging:
-    def __init__(self, queue, host):
+    def __init__(self, queue: str, host: str):
         self.queue = queue
         self.host = host
 
@@ -22,7 +24,7 @@ class BaseRMQMessaging:
 
 class RMQProducer(BaseRMQMessaging):
 
-    def publish(self, payload, exchange=''):
+    def publish(self, payload, exchange: str = ''):
         self.channel.basic_publish(exchange=exchange,
                                    routing_key=self.queue,
                                    body=payload)
@@ -30,7 +32,7 @@ class RMQProducer(BaseRMQMessaging):
 
 class RMQConsumer(BaseRMQMessaging):
 
-    def consume(self, callback):
+    def consume(self, callback: Callable):
         self.channel.basic_consume(queue=self.queue,
                                    on_message_callback=callback,
                                    auto_ack=True)

@@ -25,7 +25,7 @@ class ImageReaderInputValidator:
                             '.tiff', '.tif', '.exr', '.hdr', '.pic']
 
     @classmethod
-    def validate_input_file(cls, image_path):
+    def validate_input_file(cls, image_path: str):
         if not Path(image_path).suffix in cls.supported_extensions:
             logger.error(f'File format for {os.path.basename(image_path)}' +
                          f' is not among {cls.supported_extensions}')
@@ -36,7 +36,7 @@ class ImageReaderInputValidator:
 class ImageReader:
 
     @staticmethod
-    def read_image(path_to_image):
+    def read_image(path_to_image: str):
         if ImageReaderInputValidator.validate_input_file(path_to_image):
             img = cv2.imread(path_to_image)
             return img
@@ -45,7 +45,10 @@ class ImageReader:
 
 class ImageReaderHandler:
 
-    def __init__(self, host, path_to_image_dir=ImageReaderConfig.IMAGES_TO_PROCESS_PATH):
+    def __init__(self,
+                 host: str,
+                 path_to_image_dir: str = ImageReaderConfig.IMAGES_TO_PROCESS_PATH):
+
         self.path_to_image_dir = path_to_image_dir
         self.mq_producer = RMQProducer(ImageReaderConfig.IMAGE_REQUEST_QUEUE, host)
         logger.info('Image Reader connected to the RMQ')
@@ -54,7 +57,7 @@ class ImageReaderHandler:
 
         return [x for x in glob.glob(self.path_to_image_dir + "/*")]
 
-    def send_images(self, delta_t=ImageReaderConfig.TIME_CHECK_PERIOD):
+    def send_images(self, delta_t: float = ImageReaderConfig.TIME_CHECK_PERIOD):
 
         processed_images = set()
         logger.info(f'Image Reader: Pushing for images from {ImageReaderConfig.IMAGES_TO_PROCESS_PATH}  to RMQ')
