@@ -19,7 +19,7 @@ as `Docker` container orchestrated by `docker-compose`. These tools you can down
 > https://docs.docker.com/compose/install/
 
 ### Basic commands
-To initiate our microservice architecture you should run this command from the root of this project:
+To initiate our microservice architecture you should run this command from the root of this project:<br />
 `docker-compose up` <br />
 To terminate this session: 
 `docker-compose down` <br />
