@@ -9,7 +9,7 @@ There are three subservices :  <br />
 * **Mean Color Calculator** -`/sigp_images/mean-color_calculator`- processing the image from the queue `calculation_request` 
   and calculating average color of picture based on most abundant color. 
   This information is processed and sent to the RabbitMQ queue named `calculation_output`
-* **Image Classifier** -`/sigp_images/mean-color_calculator`- consuming the message from the queue `calcuation_output` 
+* **Image Classifier** -`/sigp_images/mean-color_calculator`- consuming the message from the queue `calculation_output` 
   and processing it based on the information of average color and sending the image to the directory 
   `/image_classification/processed_images/<average_color>` 
 
