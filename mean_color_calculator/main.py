@@ -9,6 +9,10 @@ from mq_messaging import RMQProducer, RMQConsumer
 
 
 class ColorCalculationConfig:
+    '''
+    Config for calculation
+    '''
+
     IMAGE_REQUEST_QUEUE = 'calculation_request'
     IMAGE_PROCESSED_QUEUE = 'calculation_output'
     IMAGE_NAME = "image_name"
@@ -21,9 +25,19 @@ class ColorCalculationConfig:
 
 
 class CalculatorInputValidator:
+    '''
+    Class for validating input to AverageColorCalculator
+    '''
 
     @staticmethod
     def validate_image_input(image_input):
+
+        '''
+        Validates image input comming from Rabbit MQ
+        :param image_input:
+        :return: image_input or raise error
+        '''
+
         if type(image_input) == list:
             if type(image_input[0]) == list:
                 if type(image_input[0][0]) == list and len(image_input[0][0]) == 3:
@@ -40,16 +54,25 @@ class CalculatorInputValidator:
 
 
 class AverageColorCalculator:
+    '''
+    Class for calculation mean color value of an image
+    '''
 
     def __init__(self, image: np.ndarray):
         self.image = image
 
     def calculate_average_color(self):
+
+        '''
+        Calculates average color value of self.image
+        :return: str: name of the most abundant color of an image from WebColors
+        '''
+
         color_count = {}
         dim = self.image.shape
         for i in range(dim[0]):
             for j in range(dim[1]):
-                color = self.closest_color(self.image[i, j])
+                color = self.nearest_color(self.image[i, j])
                 if color in color_count.keys():
                     color_count[color] += 1
                 else:
@@ -57,7 +80,12 @@ class AverageColorCalculator:
         return sorted(color_count.keys(), key=lambda color_name: color_count[color_name])[-1]
 
     @staticmethod
-    def closest_color(requested_colour: Union[List, np.ndarray]):
+    def nearest_color(requested_colour: Union[List, np.ndarray]):
+        '''
+        Calculates nearest color from Webcolors palette from BGR coordinate in RGB space
+        :param requested_colour: np.ndarray or list, list of three coordinates
+        :return: str, color of one pixel with given BGR coordinates
+        '''
         min_colors = {}
         for key, color_name in webcolors.CSS3_HEX_TO_NAMES.items():
             r_c, g_c, b_c = webcolors.hex_to_rgb(key)
@@ -69,6 +97,10 @@ class AverageColorCalculator:
 
 
 class CalculatorHandler:
+    '''
+    Class for handling messages from RabbitMQ a processing them for calculation
+    '''
+
     def __init__(self, host: str):
         self.mq_producer = RMQProducer(ColorCalculationConfig.IMAGE_PROCESSED_QUEUE, host)
         self.mq_consumer = RMQConsumer(ColorCalculationConfig.IMAGE_REQUEST_QUEUE, host)
