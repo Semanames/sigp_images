@@ -33,7 +33,7 @@ class CalculatorInputValidator:
     def validate_image_input(image_input):
 
         '''
-        Validates image input comming from Rabbit MQ
+        Validates image input coming from Rabbit MQ
         :param image_input:
         :return: image_input or raise error
         '''
@@ -109,6 +109,15 @@ class CalculatorHandler:
         logger.info('Mean Color Calculator: Consuming images from RMQ')
 
     def callback_for_calculation(self, ch, method, properties, body):
+        '''
+        Callback method consuming body from RMQ queue and calculating average color and producing new message back
+        to RMQ
+        :param ch:
+        :param method:
+        :param properties:
+        :param body:
+        :return:
+        '''
         body_dict = json.loads(body)
 
         image_name = body_dict[ColorCalculationConfig.IMAGE_NAME]

@@ -11,6 +11,9 @@ from mq_messaging import RMQConsumer
 
 
 class ImageClassifierConfig:
+    '''
+    Config for classification
+    '''
     IMAGE_PROCESSED_QUEUE = 'calculation_output'
     IMAGE_NAME = "image_name"
     IMAGE_ARRAY = "image"
@@ -23,6 +26,9 @@ class ImageClassifierConfig:
 
 
 class ImageClassifierInputValidator:
+    '''
+    Class for validating input to ImageClassifier
+    '''
     input_data_keys = {ImageClassifierConfig.IMAGE_NAME,
                        ImageClassifierConfig.IMAGE_ARRAY,
                        ImageClassifierConfig.AVERAGE_COLOR}
@@ -31,6 +37,11 @@ class ImageClassifierInputValidator:
 
     @classmethod
     def validate_calculation_output_data(cls, calculation_output_data: Dict):
+        '''
+        Validates whether given color is in Webcolors list
+        :param calculation_output_data:
+        :return: calculation_output_data or raise error
+        '''
         if cls.input_data_keys.issubset(set(calculation_output_data.keys())):
             if not calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR] in cls.average_color_fields:
                 raise ValueError(f'{calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR]}' +
@@ -43,16 +54,22 @@ class ImageClassifierInputValidator:
 
 
 class ImageClassifier:
+    '''
+    Class for classification and reconstruction of an image from BGR representation
+    '''
 
     def __init__(self,
                  calculation_output_data: Dict,
                  output_classification_path: str = ImageClassifierConfig.PROCESSED_IMAGES_PATH):
-
         self.output_classification_path = output_classification_path
         self.calculation_output_data = ImageClassifierInputValidator.validate_calculation_output_data(
             calculation_output_data)
 
     def classify(self):
+        '''
+        Method for writing image into directory with name from Webcolors according to its color class from calculation
+        :return: None
+        '''
         image_name = self.calculation_output_data[ImageClassifierConfig.IMAGE_NAME]
         image = np.array(self.calculation_output_data[ImageClassifierConfig.IMAGE_ARRAY])
         average_color = self.calculation_output_data[ImageClassifierConfig.AVERAGE_COLOR]
@@ -69,6 +86,9 @@ class ImageClassifier:
 
 
 class ClassificationHandler:
+    '''
+    Class for handling messages from RabbitMQ a processing them for classification
+    '''
     def __init__(self, host: str):
         self.mq_consumer = RMQConsumer(ImageClassifierConfig.IMAGE_PROCESSED_QUEUE, host)
         self.mq_consumer.consume(ClassificationHandler.classification_callback)
